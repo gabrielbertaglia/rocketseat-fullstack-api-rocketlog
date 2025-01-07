@@ -3,6 +3,8 @@ import { AppError } from "@/utils/app-error";
 import { Request, Response } from "express";
 import { compare } from "bcrypt";
 import z from "zod";
+import { sign } from "jsonwebtoken";
+import { authConfig } from "@/configs/auth";
 
 export class SessionsController {
   async create(request: Request, response: Response) {
@@ -29,6 +31,13 @@ export class SessionsController {
       throw new AppError("Invalid email/password", 401);
     }
 
-    return response.json({ message: "ok" });
+    const { expiresIn, secret } = authConfig.jwt;
+
+    const token = sign({ role: user.role ?? "customer" }, secret, {
+      subject: user.id,
+      expiresIn,
+    });
+
+    return response.json({ token });
   }
 }
