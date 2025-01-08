@@ -36,4 +36,27 @@ export class DeliveryLogsController {
 
     return response.status(201).json();
   }
+
+  async show(request: Request, response: Response) {
+    const paramsSchema = z.object({
+      delivery_id: z.string().uuid(),
+    });
+
+    const { delivery_id } = paramsSchema.parse(request.params);
+
+    const delivery = await prisma.delivery.findUnique({
+      where: {
+        id: delivery_id,
+      },
+    });
+
+    if (
+      request.user?.role === "customer" &&
+      request.user.id !== delivery?.userId
+    ) {
+      throw new AppError("You can only access your own delivery logs", 401);
+    }
+
+    return response.json(delivery);
+  }
 }
