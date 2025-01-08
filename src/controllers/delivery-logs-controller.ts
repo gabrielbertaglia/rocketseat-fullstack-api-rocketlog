@@ -48,6 +48,15 @@ export class DeliveryLogsController {
       where: {
         id: delivery_id,
       },
+      include: {
+        logs: true,
+        user: {
+          select: {
+            name: true,
+            email: true,
+          },
+        },
+      },
     });
 
     if (
