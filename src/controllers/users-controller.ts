@@ -4,6 +4,7 @@ import { z } from "zod";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/database/prisma";
 import { AppError } from "@/utils/app-error";
+import { EMAIL_EXISTS } from "@/utils/message-erros";
 export class UsersController {
   async create(request: Request, response: Response) {
     const bodySchema = z.object({
@@ -19,7 +20,7 @@ export class UsersController {
     });
 
     if (userWithSameEmail) {
-      throw new AppError("User email already exists.");
+      throw new AppError(EMAIL_EXISTS);
     }
 
     const hashedPassword = await hash(password, 8);
