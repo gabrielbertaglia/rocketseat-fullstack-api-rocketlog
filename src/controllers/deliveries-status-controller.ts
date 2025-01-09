@@ -17,18 +17,19 @@ export class DeliveriesStatusController {
 
     const { status } = bodySchema.parse(request.body);
 
-    const findOrder = await prisma.delivery.findFirst({
-      where: {
-        id,
-      },
-    });
-
     await prisma.delivery.update({
       data: {
         status,
       },
       where: {
         id,
+      },
+    });
+
+    await prisma.deliveryLog.create({
+      data: {
+        deliveryId: id,
+        description: `Status changed to ${status}`,
       },
     });
 
